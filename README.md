@@ -24,8 +24,8 @@
    ```
 
 ✅ La API estará disponible en:  
-🔗 **[http://localhost:5000](http://localhost:5241)** (HTTP)  
-🔗 **[https://localhost:5001](https://localhost:7227)** (HTTPS)  
+🔗 **[http://localhost:5241](http://localhost:5241)** (HTTP)  
+🔗 **[https://localhost:7227](https://localhost:7227)** (HTTPS)  
 
 📌 Accede a la documentación interactiva:  
 `https://localhost:5241/swagger`
