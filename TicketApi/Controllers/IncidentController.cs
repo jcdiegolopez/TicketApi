@@ -1,61 +1,112 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TicketApi.Data;
 using TicketApi.Models;
 
 namespace TicketApi.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
-    public class IncidentController : Controller
+    public class IncidentsController : ControllerBase
     {
-        private static List<Incident> _incidents = new List<Incident>
-        {
-            new Incident
-            {
-                id = 1,
-                reportar = "Juan",
-                description = "Servidor no responde",
-                status = "abierto",
-                created_at = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            },
-            new Incident
-            {
-                id = 2,
-                reportar = "Maria",
-                description = "Impresora sin papel",
-                status = "cerrado",
-                created_at = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            }
-        };
+        private readonly ApplicationDbContext _context;
 
-        //GET: Incident
-        [HttpGet]
-        public IActionResult GetAll()
+        public IncidentsController(ApplicationDbContext context)
         {
-            return Ok(_incidents);
+            _context = context;
         }
 
-        //POST: Incident
+        // GET: api/incidents
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Incident>>> GetIncidents()
+        {
+            var incidents = await _context.Incidents.ToListAsync();
+
+            if (incidents.Count == 0)
+            {
+                return NotFound(new { message = "No se encontraron incidentes registrados." });
+            }
+
+            return Ok(incidents);
+        }
+
+        // GET: api/incidents/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Incident>> GetIncident(int id)
+        {
+            var incident = await _context.Incidents.FindAsync(id);
+
+            if (incident == null)
+            {
+                return NotFound(new { message = $"No se encontró un incidente con el ID {id}." });
+            }
+
+            return Ok(incident);
+        }
+
+        // POST: api/incidents
         [HttpPost]
-        public IActionResult Create([FromBody] IncidentCreateDto dto)
+        public async Task<ActionResult<Incident>> CreateIncident(IncidentDto incidentDto)
         {
             var newIncident = new Incident
             {
-                id = _incidents.Count + 1,
-                reportar = dto.reportar,
-                description = dto.description,
-                status = dto.status,
-                created_at = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                report = incidentDto.report,
+                description = incidentDto.description,
+                status = incidentDto.status,
+                created_at = DateTime.UtcNow
             };
 
-            _incidents.Add(newIncident);
+            _context.Incidents.Add(newIncident);
+            await _context.SaveChangesAsync();
 
-            return Ok(new
+            return CreatedAtAction(nameof(GetIncident), new { id = newIncident.id }, new
             {
-                message = "Incidente creado exitosamente",
-                data = newIncident
+                message = "Incidente creado exitosamente.",
+                incident = newIncident
             });
         }
 
+        // PUT: api/incidents/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateIncident(int id, IncidentDto incidentDto)
+        {
+            var existingIncident = await _context.Incidents.FindAsync(id);
+            if (existingIncident == null)
+            {
+                return NotFound(new { message = $"No se encontró un incidente con el ID {id}." });
+            }
+
+            existingIncident.report = incidentDto.report;
+            existingIncident.description = incidentDto.description;
+            existingIncident.status = incidentDto.status;
+
+            _context.Entry(existingIncident).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Incidente actualizado exitosamente." });
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al actualizar el incidente." });
+            }
+        }
+
+        // DELETE: api/incidents/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteIncident(int id)
+        {
+            var incident = await _context.Incidents.FindAsync(id);
+            if (incident == null)
+            {
+                return NotFound(new { message = $"No se encontró un incidente con el ID {id}." });
+            }
+
+            _context.Incidents.Remove(incident);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Incidente eliminado exitosamente." });
+        }
     }
 }
