@@ -2,7 +2,7 @@
 # 🚀 Ticket Api
 
 ## 📋 Requisitos
-- [.NET 6.0 SDK o superior](https://dotnet.microsoft.com/download)
+- Docker Instalado
 - Terminal o línea de comandos
 
 ## 🛠️ Pasos rápidos
@@ -10,22 +10,17 @@
 1. **Clonar repositorio**:
    ```bash
    git clone https://github.com/jcdiegolopez/TicketApi.git
-   cd tu-api
+   cd TicketApi
    ```
 
-2. **Restaurar paquetes**:
+2. **Ejecutar doocker compose**:
    ```bash
-   dotnet restore
+   docker compose up -d
    ```
 
-3. **Ejecutar API** (modo desarrollo):
-   ```bash
-   dotnet run
-   ```
 
 ✅ La API estará disponible en:  
-🔗 **[http://localhost:5241](http://localhost:5241)** (HTTP)  
-🔗 **[https://localhost:7227](https://localhost:7227)** (HTTPS)  
+🔗 **[http://localhost:8080](http://localhost:8080)** (HTTP)  
 
 📌 Accede a la documentación interactiva:  
-`https://localhost:5241/swagger`
+`http://localhost:8080/swagger`
