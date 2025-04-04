@@ -68,7 +68,7 @@ namespace TicketApi.Controllers
 
         // PUT: api/incidents/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateIncident(int id, IncidentDto incidentDto)
+        public async Task<IActionResult> UpdateIncident(int id, UpdateStatusDto updateStatusDto)
         {
             var existingIncident = await _context.Incidents.FindAsync(id);
             if (existingIncident == null)
@@ -76,9 +76,7 @@ namespace TicketApi.Controllers
                 return NotFound(new { message = $"No se encontró un incidente con el ID {id}." });
             }
 
-            existingIncident.report = incidentDto.report;
-            existingIncident.description = incidentDto.description;
-            existingIncident.status = incidentDto.status;
+            existingIncident.status = updateStatusDto.status;
 
             _context.Entry(existingIncident).State = EntityState.Modified;
 
