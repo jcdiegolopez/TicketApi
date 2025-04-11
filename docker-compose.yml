@@ -16,8 +16,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - app-network
 
-  api:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile  # Ruta al Dockerfile
@@ -26,8 +28,30 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=IncidentsDB;User Id=sa;Password=ApiTestKey123!;TrustServerCertificate=True;
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:80/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     ports:
-      - "8080:80"
+      - "5000:80"
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./TicketFrontend
+      dockerfile: Dockerfile  # Ruta al Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "7070:80"
+    networks:
+      - app-network
 
 volumes:
   sqlserver_data:
+
+networks:
+  app-network:
+    driver: bridge
