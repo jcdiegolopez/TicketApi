@@ -18,9 +18,11 @@
    docker compose up -d
    ```
 
+✅ La App web estará disponible en:  
+🔗 **[http://localhost:7070](http://localhost:7070)** (HTTP)  
 
 ✅ La API estará disponible en:  
-🔗 **[http://localhost:8080](http://localhost:8080)** (HTTP)  
+🔗 **[http://localhost:5000](http://localhost:5000)** (HTTP)  
 
 📌 Accede a la documentación interactiva:  
-`http://localhost:8080/swagger`
+`http://localhost:5000/swagger`
