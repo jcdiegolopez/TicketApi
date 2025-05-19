@@ -1,35 +1,35 @@
 version: '3.8'
 
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  postgres:
+    image: postgres:16
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=ApiTestKey123!
-      - MSSQL_PID=Express              # Definir la edición de SQL Server
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: IncidentsDB
     ports:
-      - "1433:1433"
+      - "5450:5432"
     volumes:
-      - sqlserver_data:/var/opt/mssql  # Persistencia de datos
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-U", "sa", "-P", "ApiTestKey123!", "-Q", "SELECT 1" ]
+      test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
     networks:
       - app-network
 
   backend:
     build:
       context: .
-      dockerfile: Dockerfile  # Ruta al Dockerfile
+      dockerfile: Dockerfile
     depends_on:
-      - sqlserver
+      - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=IncidentsDB;User Id=sa;Password=ApiTestKey123!;TrustServerCertificate=True;
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=IncidentsDB;Username=postgres;Password=mysecretpassword;
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:80/health" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:80/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -41,7 +41,7 @@ services:
   frontend:
     build:
       context: ./TicketFrontend
-      dockerfile: Dockerfile  # Ruta al Dockerfile
+      dockerfile: Dockerfile
     depends_on:
       - backend
     ports:
@@ -50,7 +50,7 @@ services:
       - app-network
 
 volumes:
-  sqlserver_data:
+  postgres_data:
 
 networks:
   app-network:
