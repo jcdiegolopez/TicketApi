@@ -1,4 +1,4 @@
-const apiUrl = 'http://localhost:5000/api/Incidents'; 
+const apiUrl = 'https://ticketapi-z161.onrender.com/api/Incidents'; 
 
 function getAllIncidents() {
     return fetch(`${apiUrl}`)
