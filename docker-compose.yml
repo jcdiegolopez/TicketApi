@@ -27,7 +27,7 @@ services:
       - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=IncidentsDB;Username=postgres;Password=mysecretpassword;
+      - ConnectionStrings__DefaultConnection=Host=aws-0-us-east-1.pooler.supabase.com;Port=5432;Database=IncidentsDB;Username=postgres.pnjupdzomswcqkrzuycv;Password=eNJM9hEEyhD9Jyqy;
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:80/health"]
       interval: 10s
